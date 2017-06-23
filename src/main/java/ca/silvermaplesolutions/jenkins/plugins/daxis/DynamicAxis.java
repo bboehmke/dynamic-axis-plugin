@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -40,6 +41,7 @@ public class DynamicAxis extends Axis
 
 	private @CheckForNull String varName = "";
 	private final @Nonnull List<String> axisValues = Lists.newArrayList();
+	private String valueDelimiter = "";
 
 	/**
 	 * Always construct from an axis name and environment variable name.
@@ -52,6 +54,19 @@ public class DynamicAxis extends Axis
 		super( name, varName );
 		this.varName = varName;
 	}
+
+
+    /**
+     * Set delimiter for value splitting
+     * @param delimiter
+     */
+    @DataBoundSetter
+    public void setValueDelimiter(String delimiter) {
+	    this.valueDelimiter = delimiter;
+    }
+    public String getValueDelimiter() {
+        return this.valueDelimiter;
+    }
 
 	/**
 	 * An accessor is required if referenced in the Jelly file.
@@ -125,7 +140,14 @@ public class DynamicAxis extends Axis
 			if( varValue != null )
 			{
 				LOGGER.log( Level.FINE, "Variable value is ''{0}''", varValue);
-				newAxisValues.addAll(Arrays.asList(Util.tokenize(varValue)));
+
+				String[] values;
+				if (valueDelimiter.isEmpty()) {
+                    values = Util.tokenize(varValue);
+                } else {
+                    values = Util.tokenize(varValue, valueDelimiter);
+                }
+                newAxisValues.addAll(Arrays.asList(values));
 			}
 		}
 		catch( Exception e )
@@ -162,7 +184,10 @@ public class DynamicAxis extends Axis
 		@Override
 		public Axis newInstance( StaplerRequest req, JSONObject formData ) throws FormException
 		{
-			return new DynamicAxis( formData.getString( "name" ), formData.getString( "valueString" ) );
+            DynamicAxis axis = new DynamicAxis(formData.getString("name"),
+                                               formData.getString("valueString"));
+            axis.setValueDelimiter(formData.getString("valueDelimiter"));
+            return axis;
 		}
 
 		/**

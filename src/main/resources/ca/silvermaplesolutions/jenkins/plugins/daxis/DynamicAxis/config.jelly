@@ -5,4 +5,7 @@
   <f:entry title="${%variableLabel}" field="valueString">
       <f:textbox value="${it.varName}" />
   </f:entry>
+  <f:entry title="${%delimiterLabel}" field="valueDelimiter">
+      <f:textbox value="${it.valueDelimiter}" />
+  </f:entry>
 </j:jelly>
