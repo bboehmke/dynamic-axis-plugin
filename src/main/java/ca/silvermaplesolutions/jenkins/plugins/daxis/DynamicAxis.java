@@ -41,7 +41,7 @@ public class DynamicAxis extends Axis
 
 	private @CheckForNull String varName = "";
 	private final @Nonnull List<String> axisValues = Lists.newArrayList();
-	private String valueDelimiter = "";
+	private @CheckForNull String valueDelimiter = "";
 
 	/**
 	 * Always construct from an axis name and environment variable name.
@@ -142,7 +142,7 @@ public class DynamicAxis extends Axis
 				LOGGER.log( Level.FINE, "Variable value is ''{0}''", varValue);
 
 				String[] values;
-				if (valueDelimiter.isEmpty()) {
+				if (valueDelimiter == null || valueDelimiter.isEmpty()) {
                     values = Util.tokenize(varValue);
                 } else {
                     values = Util.tokenize(varValue, valueDelimiter);
